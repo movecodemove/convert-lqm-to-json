@@ -4,26 +4,41 @@ from html2text import html2text
 from json import dump, loads
 from pathlib import Path
 from re import sub
+from sys import exit
 from zipfile import ZipFile
 
-parser = ArgumentParser(description='Convert LG QuickMemo+ export into single text-only JSON file')
+parser = ArgumentParser(description='Convert LG QuickMemo+ export into single, text-only JSON file')
 parser.add_argument('directory', help='Path to directory that contains .lqm files', type=str)
 
 args = parser.parse_args()
 directory_path = Path(args.directory).resolve()
 
-if directory_path.exists() and directory_path.is_dir():
-    notes = []
+if not directory_path.exists():
+    exit(f'Path {directory_path} does not exist')
 
-    for file_path in iglob(str(Path(f'{directory_path}/*.lqm').resolve())):
-        with ZipFile(file_path, 'r') as zip_file:
-            with zip_file.open('memoinfo.jlqm') as json:
-                data = loads(json.read())
-                notes.append({
-                    'created_time': data['Memo']['CreatedTime'],
-                    'modified_time': data['Memo']['ModifiedTime'],
-                    'text': sub(r'\n\s*\n', '\n', html2text(data['Memo']['Desc'])).strip()
-                })
+if not directory_path.is_dir():
+    exit(f'Path {directory_path} is not a directory')
 
-    with open(str(Path(f'{directory_path}/notes.json').resolve()), 'w') as json_file:
-        dump(notes, json_file, indent=2)
+notes = []
+
+for file_path in iglob(str(Path(f'{directory_path}/*.lqm').resolve())):
+    with ZipFile(file_path, 'r') as zip_file:
+        with zip_file.open('memoinfo.jlqm') as json:
+            data = loads(json.read())
+            notes.append({
+                'created_time': data['Memo']['CreatedTime'],
+                'modified_time': data['Memo']['ModifiedTime'],
+                'text': sub(r'\n\s*\n', '\n', html2text(data['Memo']['Desc'])).strip()
+            })
+
+notes_count = len(notes)
+
+if notes_count == 0:
+    exit(f'No notes found in directory {directory_path}')
+
+file_path = Path(f'{directory_path}/notes.json').resolve()
+
+with open(file_path, 'w') as json_file:
+    dump(notes, json_file, indent=2)
+
+exit(f"JSON file containing {notes_count} note{'s' if notes_count > 1 else ''} created at {file_path}")
