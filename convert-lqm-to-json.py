@@ -6,8 +6,8 @@ from pathlib import Path
 from re import sub
 from zipfile import ZipFile
 
-parser = ArgumentParser(description='Convert LG QuickMemo+ export into single text-only JSON file.')
-parser.add_argument('directory', help='Path to directory that contains LQM files', type=str)
+parser = ArgumentParser(description='Convert LG QuickMemo+ export into single text-only JSON file')
+parser.add_argument('directory', help='Path to directory that contains .lqm files', type=str)
 
 args = parser.parse_args()
 directory_path = Path(args.directory).resolve()
