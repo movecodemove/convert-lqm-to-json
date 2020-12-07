@@ -48,7 +48,7 @@ jobs:
         run: poetry install
 
       - name: Run pytest
-        run: poetry run poe build
+        run: poetry run pytest tests
 
   publish:
     name: Publish
@@ -58,7 +58,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: "3.8"
@@ -86,12 +86,9 @@ jobs:
       - name: Install dependencies
         run: poetry install
 
-      - name: Build package
-        run: poetry run poe build
-
-      - name: Publish package to PyPI
+      - name: Build package and publish it to PyPI
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           poetry config pypi-token.pypi $PYPI_TOKEN
-          poetry run poe publish
+          poetry publish --build
