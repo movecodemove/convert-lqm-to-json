@@ -11,6 +11,8 @@ def _bump_version():
     for path in ["convert_lqm_to_json/__init__.py", "tests/test___init__.py"]:
         _replace_in_file(path, current_version, new_version)
 
+    return new_version
+
 
 def _replace_in_file(file_path, current_string, new_string):
     with open(file_path, "r+") as file:
@@ -35,9 +37,11 @@ def format():
 
 def publish():
     test()
-    _bump_version()
-    build()
-    run(["poetry", "publish", "-r", "testpypi"])
+    version = _bump_version()
+    run(["git", "add", "--all"])
+    run(["git", "commit"])
+    run(["git", "tag", "-a", f"v{version}", "-m", f"Version {version}"])
+    run(["git", "push", "--follow-tags"])
 
 
 def test():
