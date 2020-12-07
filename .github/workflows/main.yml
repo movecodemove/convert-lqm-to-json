@@ -45,10 +45,12 @@ jobs:
         run: timeout 10s poetry run pip --version || rm -rf .venv
 
       - name: Install dependencies
-        run: poetry install
+        run: |
+          poetry install
+          alias poe='poetry run poe'
 
       - name: Run pytest
-        run: poe test
+        run: poe build
 
   publish:
     name: Publish
@@ -85,14 +87,16 @@ jobs:
         run: timeout 10s poetry run pip --version || rm -rf .venv
 
       - name: Install dependencies
-        run: poetry install
+        run: |
+          poetry install
+          alias poe='poetry run poe'
 
       - name: Build package
-        run: poetry build
+        run: poe build
 
       - name: Publish package to PyPI
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           poetry config pypi-token.pypi $PYPI_TOKEN
-          poetry publish
+          poe publish
