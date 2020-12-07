@@ -1,4 +1,4 @@
-name: Main
+name: CI
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   test:
-    name: ${{ matrix.os }} / ${{ matrix.python-version }}
+    name: Testing ${{ matrix.os }} / ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
@@ -25,15 +25,13 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install poetry
-        shell: bash
         run: |
           python -m ensurepip
           python -m pip install --upgrade pip
           python -m pip install poetry
 
       - name: Configure poetry
-        shell: bash
-        run: python -m poetry config virtualenvs.in-project true
+        run: poetry config virtualenvs.in-project true
 
       - name: Set up cache
         uses: actions/cache@v2
@@ -44,16 +42,13 @@ jobs:
 
       - name: Ensure cache is healthy
         if: steps.cache.outputs.cache-hit == 'true'
-        shell: bash
-        run: timeout 10s python -m poetry run pip --version || rm -rf .venv
+        run: timeout 10s poetry run pip --version || rm -rf .venv
 
       - name: Install dependencies
-        shell: bash
-        run: python -m poetry install
+        run: poetry install
 
       - name: Run pytest
-        shell: bash
-        run: python -m poetry run python -m pytest -v tests
+        run: poe test
 
   publish:
     name: Publish

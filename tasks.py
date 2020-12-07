@@ -31,11 +31,15 @@ def build():
     run(["poetry", "build"])
 
 
+def commit():
+    run(["git", "add", "--all"])
+    run(["git", "commit"])
+
+
 def publish():
     test()
     version = _bump_version()
-    run(["git", "add", "--all"])
-    run(["git", "commit"])
+    commit()
     run(["git", "tag", "-a", f"v{version}", "-m", f"Version {version}"])
     run(["git", "push", "--follow-tags"])
 

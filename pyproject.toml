@@ -1,3 +1,13 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poe.tasks]
+build = { script = "tasks:build" }
+commit = { script = "tasks:commit" }
+publish = { script = "tasks:publish" }
+test = { script = "tasks:test" }
+
 [tool.poetry]
 name = "convert_lqm_to_json"
 version = "0.1.10"
@@ -11,14 +21,8 @@ repository = "https://github.com/movecodemove/convert-lqm-to-json"
 python = "^3.8"
 
 [tool.poetry.dev-dependencies]
+poethepoet = "^0.9.0"
 pytest = "^5.2"
 
 [tool.poetry.scripts]
-build = "scripts:build"
-publish = "scripts:publish"
-test = "scripts:test"
 convert-lqm-to-json = "convert_lqm_to_json.cli:main"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
