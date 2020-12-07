@@ -31,10 +31,6 @@ def build():
     run(["poetry", "build"])
 
 
-def format():
-    run(["black", "convert_lqm_to_json/", "tests/"])
-
-
 def publish():
     test()
     version = _bump_version()

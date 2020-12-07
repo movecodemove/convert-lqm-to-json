@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "convert_lqm_to_json"
-version = "0.1.6"
+version = "0.1.7"
 description = "Convert LG QuickMemo+ files into single, text-only JSON file"
 authors = ["Scott Steven Rodriguez <scott@movecodemove.com>"]
 license = "MIT"
@@ -14,7 +14,6 @@ pytest = "^5.2"
 
 [tool.poetry.scripts]
 build = "scripts:build"
-format = "scripts:format"
 publish = "scripts:publish"
 test = "scripts:test"
 convert-lqm-to-json = "convert_lqm_to_json.cli:main"
