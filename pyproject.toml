@@ -2,15 +2,9 @@
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poe.tasks]
-build = { script = "tasks:build" }
-commit = { script = "tasks:commit" }
-publish = { script = "tasks:publish" }
-test = { script = "tasks:test" }
-
 [tool.poetry]
 name = "convert_lqm_to_json"
-version = "0.1.12"
+version = "0.1.11"
 description = "Convert LG QuickMemo+ files into single, text-only JSON file"
 authors = ["Scott Steven Rodriguez <scott@movecodemove.com>"]
 license = "MIT"
@@ -18,10 +12,10 @@ readme = "README.md"
 repository = "https://github.com/movecodemove/convert-lqm-to-json"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.6"
 
 [tool.poetry.dev-dependencies]
-poethepoet = "^0.9.0"
+importlib-metadata = "^3.1.1"
 pytest = "^5.2"
 
 [tool.poetry.scripts]
