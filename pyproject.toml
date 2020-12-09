@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "convert_lqm_to_json"
-version = "0.1.12"
+version = "0.1.13"
 description = "Convert LG QuickMemo+ files into single, text-only JSON file"
 authors = ["Scott Steven Rodriguez <scott@movecodemove.com>"]
 license = "MIT"
