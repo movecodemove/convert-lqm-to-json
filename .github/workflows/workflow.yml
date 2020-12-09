@@ -50,11 +50,7 @@ jobs:
           python -m poetry install
 
       - name: Update release version number
-<<<<<<< HEAD
         if: ${{ github.event_name == 'pull_request' && matrix.os == 'Ubuntu' && matrix.python-version == '3.9' }}
-=======
-        if: ${{ github.ref == 'refs/heads/main' && matrix.os == 'Ubuntu' && matrix.python-version == '3.9' }}
->>>>>>> 6c2d06f... Setting up branching and workflow
         run: |
           previous=`python -m poetry version -s`
           python -m poetry version patch -q
@@ -66,11 +62,7 @@ jobs:
         run: python -m poetry run pytest tests
 
       - name: Tag release
-<<<<<<< HEAD
         if: ${{ github.event_name == 'pull_request' && matrix.os == 'Ubuntu' && matrix.python-version == '3.9' }}
-=======
-        if: ${{ github.ref == 'refs/heads/main' && matrix.os == 'Ubuntu' && matrix.python-version == '3.9' }}
->>>>>>> 6c2d06f... Setting up branching and workflow
         run: |
           git config --global user.name "Automated Release"
           git config --global user.email "<>"
@@ -79,11 +71,7 @@ jobs:
           git push --follow-tags
 
       - name: Publish release
-<<<<<<< HEAD
         if: ${{ github.event_name == 'pull_request' && matrix.os == 'Ubuntu' && matrix.python-version == '3.9' }}
-=======
-        if: ${{ github.ref == 'refs/heads/main' && matrix.os == 'Ubuntu' && matrix.python-version == '3.9' }}
->>>>>>> 6c2d06f... Setting up branching and workflow
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
