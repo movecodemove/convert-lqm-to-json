@@ -1,6 +1,6 @@
 # Convert LG QuickMemo+ files into single, text-only JSON file
 
-[![CI](https://github.com/movecodemove/convert-lqm-to-json/workflows/CI/badge.svg)](https://github.com/movecodemove/convert-lqm-to-json/actions)
+[![Workflow](https://github.com/movecodemove/convert-lqm-to-json/workflows/.github/workflows/workflow.yml/badge.svg)](https://github.com/movecodemove/convert-lqm-to-json/actions)
 
 ## Installation
 `$ pip install [--user] convert-lqm-to-json`
