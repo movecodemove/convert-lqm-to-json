@@ -65,10 +65,11 @@ jobs:
       - name: Tag release
         if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true && matrix.os == 'Ubuntu' && matrix.python-version == '3.9' }}
         run: |
+          version=`python -m poetry version -s`
           git config --global user.name "Automated Release"
           git config --global user.email "<>"
           git commit -am "Automated release of version $current"
-          git tag -a "v$current" -m "Version {version}"
+          git tag -a "v$version" -m "Version {version}"
           git push --follow-tags
 
       - name: Publish release
