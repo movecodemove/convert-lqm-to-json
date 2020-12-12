@@ -35,6 +35,7 @@ jobs:
           path: ${{ steps.cache-values.outputs.path }}
 
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         uses: ./.github/actions/dependencies
 
       - name: Run tests
