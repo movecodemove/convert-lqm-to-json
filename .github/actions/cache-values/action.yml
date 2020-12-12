@@ -1,11 +1,12 @@
 name: Get Cache Values
-description: Gets values to pass to cache@v2 action to retrieve dependencies
+description: Gets key and path values to pass to cache@v2 action
 inputs:
   hash:
     description: 'Hash of poetry.lock file'
     required: true
 runs:
   using: composite
+  steps:
 outputs:
   key:
     value: cache-${{ runner.os }}-${{ $(python -c 'import sys; print('-'.join(str(v) for v in sys.version_info))') }}-${{ inputs.hash }}
