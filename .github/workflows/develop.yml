@@ -3,7 +3,7 @@ name: Develop
 on:
   push:
     branches:
-      - feature/*
+      - develop
 
 defaults:
   run:
@@ -23,25 +23,20 @@ jobs:
           python-version: 3.9
 
       - name: Get cache values
-        uses: ./.github/actions/cache-values
         id: cache-values
+        uses: ./.github/actions/cache-values
+        with:
+          hash: ${{ hashFiles('poetry.lock') }}
 
       - uses: actions/cache@v2
         id: cache
         with:
-          path: |
-            ${{ steps.cache-values.outputs.site-packages-path }}
-            .venv
-          key: ${{ steps.cache-values.outputs.cache-id }}
+          key: ${{ steps.cache-values.outputs.key }}
+          path: ${{ steps.cache-values.outputs.path }}
 
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          python -m ensurepip
-          python -m pip install --upgrade pip
-          python -m pip install poetry
-          python -m poetry config virtualenvs.in-project true
-          python -m poetry install
+        uses: ./.github/actions/dependencies
 
       - name: Run tests
         run: python -m poetry run pytest tests
