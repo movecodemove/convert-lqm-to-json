@@ -3,7 +3,7 @@ name: Develop
 on:
   push:
     branches:
-      - feature/*
+      - develop
 
 defaults:
   run:

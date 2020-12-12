@@ -24,28 +24,21 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Get Python values
-        id: python-values
-        run: |
-          echo ::set-output name=full-version::$(python -c 'import sys; print('-'.join(str(v) for v in sys.version_info))')
-          echo ::set-output name=site-packages-path::$(python -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')
+      - name: Get cache values
+        id: cache-values
+        uses: ./.github/actions/cache-values
+        with:
+          hash: ${{ hashFiles('poetry.lock') }}
 
       - uses: actions/cache@v2
         id: cache
         with:
-          path: |
-            ${{ steps.python-values.outputs.site-packages-path }}
-            .venv
-          key: ${{ steps.python-values.outputs.site-packages-path }}
+          key: ${{ steps.cache-values.outputs.key }}
+          path: ${{ steps.cache-values.outputs.path }}
 
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          python -m ensurepip
-          python -m pip install --upgrade pip
-          python -m pip install poetry
-          python -m poetry config virtualenvs.in-project true
-          python -m poetry install
+        uses: ./.github/actions/dependencies
 
       - name: Update release version number
         if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true && matrix.os == 'Ubuntu' && matrix.python-version == '3.9' }}
