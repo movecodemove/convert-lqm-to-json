@@ -1,21 +1,15 @@
 name: Get Cache Values
 description: Gets values to pass to cache@v2 action to retrieve dependencies
+inputs:
+  hash:
+    description: 'Hash of poetry.lock file'
+    required: true
 runs:
   using: composite
-  steps:
-    - id: values
-      shell: bash
-      run: |
-          python-version=$(python -c 'import sys; print('-'.join(str(v) for v in sys.version_info))')
-          site-packages-path=$(python -c 'import sys; print('-'.join(str(v) for v in sys.version_info))')
-          cache-id=cache-${{ runner.os }}-$python-version-${{ hashFiles('poetry.lock') }}
-          echo ::set-output name=python-version::$python-version
-          echo ::set-output name=site-packages-path::$site-packages-path
-          echo ::set-output name=cache-id::$cache-id
 outputs:
-  python-version:
-    value: ${{ steps.values.outputs.python-version }}
-  site-packages-path:
-    value: ${{ steps.values.site-packages-path }}
-  cache-id:
-    value: ${{ steps.values.cache-id }}
+  key:
+    value: cache-${{ runner.os }}-${{ $(python -c 'import sys; print('-'.join(str(v) for v in sys.version_info))') }}-${{ inputs.hash }}
+  path:
+    value: |
+      ${{ $(python -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])') }}
+      .venv
