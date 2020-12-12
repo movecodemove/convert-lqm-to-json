@@ -40,32 +40,24 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         uses: ./.github/actions/dependencies
 
-      - name: Update release version number
-        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true && matrix.os == 'Ubuntu' && matrix.python-version == '3.9' }}
+      - name: Bump release version number
+        if: ${{ github.event.pull_request.merged == true && matrix.os == 'Ubuntu' && matrix.python-version == '3.9' }}
         run: |
-          previous=`python -m poetry version -s`
+          CURRENT_VERSION=`python -m poetry version -s`
           python -m poetry version patch -q
-          current=`python -m poetry version -s`
-          sed -i "s/$previous/$current/g" convert_lqm_to_json/__init__.py
-          sed -i "s/$previous/$current/g" tests/test___init__.py
+          NEW_VERSION=`python -m poetry version -s`
+          sed -i "s/$CURRENT_VERSION/$NEW_VERSION/g" convert_lqm_to_json/__init__.py
+          sed -i "s/$CURRENT_VERSION/$NEW_VERSION/g" tests/test___init__.py
 
       - name: Run tests
         run: python -m poetry run pytest tests
 
       - name: Tag release
-        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true && matrix.os == 'Ubuntu' && matrix.python-version == '3.9' }}
+        if: ${{ github.event.pull_request.merged == true && matrix.os == 'Ubuntu' && matrix.python-version == '3.9' }}
         run: |
-          version=`python -m poetry version -s`
           git config --global user.name "Github Action Bot"
           git config --global user.email "<>"
-          git commit -am "Version $version"
-          git tag -a "v$version" -m "Version $version"
+          VERSION=`python -m poetry version -s`
+          git commit -am "Release $VERSION"
+          git tag -a "v$VERSION" -m "Version $VERSION"
           git push --follow-tags
-
-      - name: Publish release
-        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.merged == true && matrix.os == 'Ubuntu' && matrix.python-version == '3.9' }}
-        env:
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: |
-          python -m poetry config pypi-token.pypi $PYPI_TOKEN
-          python -m poetry publish --build

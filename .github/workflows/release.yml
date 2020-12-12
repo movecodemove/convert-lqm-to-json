@@ -1,0 +1,44 @@
+on:
+  push:
+    tags:
+      - 'v*'
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Get cache values
+        id: cache-values
+        uses: ./.github/actions/cache-values
+        with:
+          hash: ${{ hashFiles('poetry.lock') }}
+
+      - uses: actions/cache@v2
+        id: cache
+        with:
+          key: ${{ steps.cache-values.outputs.key }}
+          path: ${{ steps.cache-values.outputs.path }}
+
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: ./.github/actions/dependencies
+
+      - name: Publish release
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          python -m poetry config pypi-token.pypi $PYPI_TOKEN
+          python -m poetry publish --build
