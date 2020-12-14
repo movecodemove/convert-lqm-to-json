@@ -1,5 +1,5 @@
 name: Get Cache Values
-description: Gets key and path values to pass to cache@v2 action
+description: Gets key and paths values to pass to cache@v2 action
 inputs:
   hash:
     description: 'Hash of poetry.lock file'
@@ -9,13 +9,11 @@ runs:
   steps:
     - id: python-values
       shell: bash
-      run: |
-        echo ::set-output name=version::$(python -c 'import sys; print("-".join(str(v) for v in sys.version_info))')
-        echo ::set-output name=site-packages-path::$(python -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')
+      run: echo ::set-output name=version::$(python -c 'import sys; print("-".join(str(v) for v in sys.version_info))')
 outputs:
   key:
     value: cache-${{ runner.os }}-${{ steps.python-values.outputs.version }}-${{ inputs.hash }}
-  path:
+  paths:
     value: |
-      ${{ steps.python-values.outputs.site-packages-path }}
+      ~/.poetry
       .venv

@@ -1,0 +1,20 @@
+BRANCH=`git branch --show-current`
+
+if [[ "$BRANCH" != *"feature/"* ]]; then
+  echo "Current branch $BRANCH is not a feature branch."
+  exit
+fi
+
+if [[ `git status -s` != "" ]]; then
+  echo "Commit changes before closing feature branch."
+  exit
+fi
+
+poetry run pytest tests
+
+[ $? -ne 0 ] && exit
+
+git checkout develop
+git pull
+git merge --squash $BRANCH
+git commit
