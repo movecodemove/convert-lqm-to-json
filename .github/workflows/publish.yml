@@ -20,50 +20,39 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
 
-      - name: Set up Python
+      - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.9
 
-      - name: Get cache key and paths values
+      - name: Get cache key and path values
         id: cache-values
         uses: ./.github/actions/cache-values
         with:
           hash: ${{ hashFiles('poetry.lock') }}
 
-      - uses: actions/cache@v2
+      - name: Setup cache
+        uses: actions/cache@v2
         id: cache
         with:
-          key: {{ steps.cache-values.outputs.key }}
-          path: {{ steps.cache-values.outputs.paths }}
+          key: ${{ steps.cache-values.outputs.key }}
+          path: ${{ steps.cache-values.outputs.path }}
 
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         uses: ./.github/actions/dependencies
 
-      - name: Bump version number
-        run: |
-          CURRENT_VERSION=`python -m poetry version -s`
-          python -m poetry version patch -q
-          NEW_VERSION=`python -m poetry version -s`
-          sed -i "s/$CURRENT_VERSION/$NEW_VERSION/g" convert_lqm_to_json/__init__.py
-          sed -i "s/$CURRENT_VERSION/$NEW_VERSION/g" tests/test___init__.py
-
-      - name: Ensure tests pass after version bump
-        run: poetry run pytest tests
-
-      - name: Create and tag commit and push both to Github
+      - name: Tag commit push it to Github
         run: |
           git config --global user.name "Github Action Bot"
           git config --global user.email "<>"
           VERSION=`python -m poetry version -s`
-          git commit -am "Release $VERSION"
           git tag -a "v$VERSION" -m "Version $VERSION"
           git push --follow-tags
 
-      - name: Publish release
+      - name: Publish release to PyPI
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
-          poetry config pypi-token.pypi $PYPI_TOKEN
-          poetry publish --build
+          ~/.poetry/bin/poetry config pypi-token.pypi $PYPI_TOKEN
+          ~/.poetry/bin/poetry run pytest --version

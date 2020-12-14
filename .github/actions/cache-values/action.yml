@@ -1,5 +1,5 @@
 name: Get Cache Values
-description: Gets key and paths values to pass to cache@v2 action
+description: Gets key and path values to pass to cache@v2 action
 inputs:
   hash:
     description: 'Hash of poetry.lock file'
@@ -7,13 +7,23 @@ inputs:
 runs:
   using: composite
   steps:
-    - id: python-values
+    - id: values
       shell: bash
-      run: echo ::set-output name=version::$(python -c 'import sys; print("-".join(str(v) for v in sys.version_info))')
+      run: |
+        if [ "${{ matrix.os }}" == "MacOS" ]; then
+          echo ::set-output name=pip-cache-path::"~/Library/Caches/pip"
+        elif [ "${{ matrix.os }}" == "Ubuntu" ]; then
+          echo ::set-output name=pip-cache-path::"~/.cache/pip"
+        elif [ "${{ matrix.os }}" == "Windows" ]; then
+          echo ::set-output name=pip-cache-path::"~\AppData\Local\pip\Cache"
+        fi
+        echo ::set-output name=python-version::$(python -c 'import sys; print("-".join(str(v) for v in sys.version_info))')
+        echo ::set-output name=site-packages-path::$(python -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')
 outputs:
   key:
-    value: cache-${{ runner.os }}-${{ steps.python-values.outputs.version }}-${{ inputs.hash }}
-  paths:
+    value: cache-${{ runner.os }}-${{ steps.values.outputs.python-version }}-${{ inputs.hash }}
+  path:
     value: |
-      ~/.poetry
       .venv
+      ${{ steps.values.outputs.pip-cache-path }}
+      ${{ steps.values.outputs.site-packages-path }}
