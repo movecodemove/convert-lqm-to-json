@@ -4,8 +4,8 @@ on:
   pull_request:
     branches:
       - develop
-      - release
       - main
+      - 'release/*'
   push:
     branches:
       - develop
@@ -24,7 +24,7 @@ jobs:
         os: [Ubuntu, MacOS, Windows]
         python-version: [3.7, 3.8, 3.9]
         run-all:
-          - ${{ contains(github.ref, 'release') || contains(github.ref, 'main') }}
+          - ${{ contains(github.ref, 'main') || contains(github.ref, 'release') }}
         exclude:
           - run-all: false
             os: Ubuntu
