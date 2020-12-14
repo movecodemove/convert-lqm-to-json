@@ -1,3 +1,5 @@
+set -e
+
 BRANCH=`git branch --show-current`
 
 if [[ "$BRANCH" != *"feature/"* ]]; then
@@ -5,26 +7,16 @@ if [[ "$BRANCH" != *"feature/"* ]]; then
   exit
 fi
 
+poetry run pytest tests
+
 if [[ `git status -s` != "" ]]; then
   git add --all
   git commit
 fi
 
-[ $? -ne 0 ] && exit
-
-poetry run pytest tests
-
-[ $? -ne 0 ] && exit
-
 git checkout develop
 git pull
 git merge --edit --squash $BRANCH
-
-[ $? -ne 0 ] && exit
-
 git push
-
-[ $? -ne 0 ] && exit
-
 git branch -d $BRANCH
 git push origin --delete $BRANCH
