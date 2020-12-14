@@ -11,12 +11,13 @@ poetry run pytest tests
 
 if [[ `git status -s` != "" ]]; then
   git add --all
-  git commit
+  git commit -m "Final commit before merging $BRANCH branch with develop branch"
 fi
 
 git checkout develop
 git pull
-git merge --edit --squash $BRANCH
+git merge --squash $BRANCH
+git commit
 git push
-git branch -d $BRANCH
+git branch -D $BRANCH
 git push origin --delete $BRANCH
