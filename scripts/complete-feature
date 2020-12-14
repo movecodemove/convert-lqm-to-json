@@ -6,9 +6,11 @@ if [[ "$BRANCH" != *"feature/"* ]]; then
 fi
 
 if [[ `git status -s` != "" ]]; then
-  echo "Commit changes before closing feature branch."
-  exit
+  git add --all
+  git commit
 fi
+
+[ $? -ne 0 ] && exit
 
 poetry run pytest tests
 
@@ -16,5 +18,13 @@ poetry run pytest tests
 
 git checkout develop
 git pull
-git merge --squash $BRANCH
-git commit
+git merge --edit --squash $BRANCH
+
+[ $? -ne 0 ] && exit
+
+git push
+
+[ $? -ne 0 ] && exit
+
+git branch -d $BRANCH
+git push origin --delete $BRANCH
