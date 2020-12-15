@@ -1,0 +1,22 @@
+set -e
+
+git checkout develop
+git pull
+
+poetry run pytest tests
+
+source `dirname $0`/_functions
+CURRENT_VERSION=`get-current-version`
+NEXT_VERSION=`get-next-version`
+BRANCH=release/$NEXT_VERSION
+
+git checkout -b $BRANCH
+
+sed -i "s/$CURRENT_VERSION/$NEXT_VERSION/g" pyproject.toml
+sed -i "s/$CURRENT_VERSION/$NEXT_VERSION/g" convert_lqm_to_json/__init__.py
+sed -i "s/$CURRENT_VERSION/$NEXT_VERSION/g" tests/test___init__.py
+
+poetry run pytest tests
+
+git commit -am "Release $NEXT_VERSION"
+git push -u origin $BRANCH
