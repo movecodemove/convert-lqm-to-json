@@ -1,0 +1,58 @@
+name: Publish
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  publish:
+    name: Publish Release
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == true }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Get cache key and path values
+        id: cache-values
+        uses: ./.github/actions/cache-values
+        with:
+          hash: ${{ hashFiles('poetry.lock') }}
+
+      - name: Setup cache
+        uses: actions/cache@v2
+        id: cache
+        with:
+          key: ${{ steps.cache-values.outputs.key }}
+          path: ${{ steps.cache-values.outputs.path }}
+
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: ./.github/actions/dependencies
+
+      - name: Tag commit push it to Github
+        run: |
+          git config --global user.name "Github Action Bot"
+          git config --global user.email "<>"
+          VERSION=`python -m poetry version -s`
+          git tag -a "v$VERSION" -m "Version $VERSION"
+          git push --follow-tags
+
+      - name: Publish release to PyPI
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          python -m poetry config pypi-token.pypi $PYPI_TOKEN
+          python -m poetry publish --build
