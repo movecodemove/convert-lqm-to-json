@@ -1,0 +1,15 @@
+set -e
+
+NAME="$1"
+
+if [[ $NAME == "" ]]; then
+  echo "Feature name required."
+  exit
+fi
+
+BRANCH="feature/$NAME"
+
+git checkout develop
+git pull
+git checkout -b $BRANCH
+git push -u origin $BRANCH

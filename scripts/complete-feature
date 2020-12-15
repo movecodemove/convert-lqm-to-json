@@ -1,0 +1,23 @@
+set -e
+
+BRANCH=`git branch --show-current`
+
+if [[ "$BRANCH" != *"feature/"* ]]; then
+  echo "Current branch $BRANCH is not a feature branch."
+  exit
+fi
+
+poetry run pytest tests
+
+if [[ `git status -s` != "" ]]; then
+  git add --all
+  git commit -m "Final commit before merging $BRANCH branch with develop branch"
+fi
+
+git checkout develop
+git pull
+git merge --squash $BRANCH
+git commit
+git push
+git branch -D $BRANCH
+git push origin --delete $BRANCH
