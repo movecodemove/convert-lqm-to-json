@@ -1,0 +1,12 @@
+get-current-version() {
+  poetry version -s
+}
+
+get-next-version() {
+  python - `get-current-version` <<EOF
+import sys
+version = sys.argv[1]
+base, _, minor = version.rpartition('.')
+print(base + '.' + str(int(minor) + 1))
+EOF
+}
