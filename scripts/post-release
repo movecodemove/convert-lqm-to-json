@@ -1,0 +1,10 @@
+set -e
+
+git checkout main
+git pull
+
+source `dirname $0`/_functions
+BRANCH=release/`get-current-version`
+
+git branch -D $BRANCH
+git push origin --delete $BRANCH
